@@ -1,0 +1,185 @@
+{
+  "seed_results": [
+    {
+      "seed": 42,
+      "forget_acc": 0.0,
+      "retain_acc": 0.4529477059841156,
+      "mia_classic": {
+        "A1_loss_threshold": 0.5344176120031721,
+        "A2_conf_threshold": 0.46503314489131753,
+        "A3_entropy_threshold": 0.4639986913727845,
+        "A4_logit_lr": 0.5381341417930103,
+        "A5_rep_knn": 0.7163161777049971,
+        "A7_margin_label": 0.465020640248101,
+        "A8_shadow_feature": 0.5361554510583957
+      },
+      "mia_neural": 0.5305172689754926,
+      "mia_query_adapt": 0.49432373190831974,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": NaN,
+      "cka": {
+        "Image-Image": 0.0,
+        "Text-Text": 1.0,
+        "Fused-Fused": 1.0,
+        "Image-Text": 0.0,
+        "Fused-Image": 0.0,
+        "Fused-Text": 0.4104616641998291
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_MU_ALIGN_seed42_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_seed42_member_mask.npy"
+      }
+    },
+    {
+      "seed": 123,
+      "forget_acc": 0.0,
+      "retain_acc": 0.4589286744594574,
+      "mia_classic": {
+        "A1_loss_threshold": 0.52993736779481,
+        "A2_conf_threshold": 0.466282110499039,
+        "A3_entropy_threshold": 0.465504743186267,
+        "A4_logit_lr": 0.5394253657672186,
+        "A5_rep_knn": 0.719809734576658,
+        "A7_margin_label": 0.4665594204750515,
+        "A8_shadow_feature": 0.534501705512795
+      },
+      "mia_neural": 0.5236997497115919,
+      "mia_query_adapt": 0.4874913441957123,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": NaN,
+      "cka": {
+        "Image-Image": 0.0,
+        "Text-Text": 1.0000001192092896,
+        "Fused-Fused": 0.9999999403953552,
+        "Image-Text": 0.0,
+        "Fused-Image": 0.0,
+        "Fused-Text": 0.4086461067199707
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_MU_ALIGN_seed123_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_seed123_member_mask.npy"
+      }
+    },
+    {
+      "seed": 5508,
+      "forget_acc": 0.0,
+      "retain_acc": 0.46157726645469666,
+      "mia_classic": {
+        "A1_loss_threshold": 0.5355737677011613,
+        "A2_conf_threshold": 0.4659523167347773,
+        "A3_entropy_threshold": 0.4643621219951919,
+        "A4_logit_lr": 0.5376772039731154,
+        "A5_rep_knn": 0.7231100125291998,
+        "A7_margin_label": 0.46605988019232103,
+        "A8_shadow_feature": 0.5356764040627926
+      },
+      "mia_neural": 0.5199401001017206,
+      "mia_query_adapt": 0.4898367760021446,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": NaN,
+      "cka": {
+        "Image-Image": 0.9999834299087524,
+        "Text-Text": 0.9999999403953552,
+        "Fused-Fused": 1.0000001192092896,
+        "Image-Text": 0.0010653758654370904,
+        "Fused-Image": 0.00013524423411581665,
+        "Fused-Text": 0.3382546305656433
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_MU_ALIGN_seed5508_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_seed5508_member_mask.npy"
+      }
+    },
+    {
+      "seed": 777,
+      "forget_acc": 0.0,
+      "retain_acc": 0.45793062448501587,
+      "mia_classic": {
+        "A1_loss_threshold": 0.535077386586715,
+        "A2_conf_threshold": 0.4634423510905998,
+        "A3_entropy_threshold": 0.4620425519852654,
+        "A4_logit_lr": 0.5403709651197717,
+        "A5_rep_knn": 0.7219151429602852,
+        "A7_margin_label": 0.4635363507854605,
+        "A8_shadow_feature": 0.5379060315315038
+      },
+      "mia_neural": 0.5289595860354182,
+      "mia_query_adapt": 0.48981785722108545,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": NaN,
+      "cka": {
+        "Image-Image": 0.0,
+        "Text-Text": 1.0000001192092896,
+        "Fused-Fused": 1.0,
+        "Image-Text": 0.0,
+        "Fused-Image": 0.0,
+        "Fused-Text": 0.4026927947998047
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_MU_ALIGN_seed777_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_seed777_member_mask.npy"
+      }
+    },
+    {
+      "seed": 2025,
+      "forget_acc": 0.0,
+      "retain_acc": 0.4605596661567688,
+      "mia_classic": {
+        "A1_loss_threshold": 0.527774431049193,
+        "A2_conf_threshold": 0.46765157834494053,
+        "A3_entropy_threshold": 0.466555133368031,
+        "A4_logit_lr": 0.537314049688877,
+        "A5_rep_knn": 0.7231329299523669,
+        "A7_margin_label": 0.46785314195209804,
+        "A8_shadow_feature": 0.5334917026925691
+      },
+      "mia_neural": 0.5278732806835602,
+      "mia_query_adapt": 0.48792186769434753,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": NaN,
+      "cka": {
+        "Image-Image": 0.9999999403953552,
+        "Text-Text": 0.9999999403953552,
+        "Fused-Fused": 1.0000001192092896,
+        "Image-Text": 0.0028258804231882095,
+        "Fused-Image": 0.003728205570951104,
+        "Fused-Text": 0.44447991251945496
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_MU_ALIGN_seed2025_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_full_seed2025_member_mask.npy"
+      }
+    }
+  ],
+  "aggregate": {
+    "forget_acc": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "retain_acc": {
+      "mean": 0.4583887875080109,
+      "std": 0.0033535753878043417
+    },
+    "mia_neural": {
+      "mean": 0.5261979971015567,
+      "std": 0.004315425034766353
+    },
+    "inv_acc": {
+      "mean": NaN,
+      "std": NaN
+    },
+    "prop_auc": {
+      "mean": null,
+      "std": null
+    },
+    "attr_acc": {
+      "mean": null,
+      "std": null
+    }
+  }
+}

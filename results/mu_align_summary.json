@@ -1,0 +1,14 @@
+{
+  "ORIG": {
+    "forget_acc": 0.8636363744735718,
+    "retain_acc": 0.09278350323438644
+  },
+  "RETR": {
+    "forget_acc": 0.0,
+    "retain_acc": 0.37457045912742615
+  },
+  "MU-Align": {
+    "forget_acc": 0.0,
+    "retain_acc": 0.4020618498325348
+  }
+}

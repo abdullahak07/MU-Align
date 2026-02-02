@@ -1,0 +1,177 @@
+{
+  "seed_results": [
+    {
+      "seed": 42,
+      "forget_acc": 0.0,
+      "retain_acc": 0.07785671949386597,
+      "mia_classic": {
+        "A1_loss_threshold": 0.5051132213294376,
+        "A2_conf_threshold": 0.5060552980060606,
+        "A3_entropy_threshold": 0.5004067433770405,
+        "A4_logit_lr": 0.5358369554997866,
+        "A5_rep_knn": 0.7928448169871771,
+        "A7_margin_label": 0.5110724746689423,
+        "A8_shadow_feature": 0.5051070015694046
+      },
+      "mia_neural": 0.5119632021638979,
+      "mia_query_adapt": 0.503349991682879,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": null,
+      "cka": {
+        "Image-Image": 1.0000001192092896,
+        "Text-Text": 1.0,
+        "Fused-Fused": 0.9999999403953552,
+        "Image-Text": 0.0013443686766549945,
+        "Fused-Image": 0.0013577264035120606,
+        "Fused-Text": 0.7809947729110718
+      },
+      "dist_to_retr": {
+        "logits_mse_all": 47.224220275878906,
+        "embeds_mse_all": 0.7635487914085388,
+        "logits_mse_forget": 67.59745788574219,
+        "embeds_mse_forget": 0.8508208394050598,
+        "logits_mse_retain": 41.64540481567383,
+        "embeds_mse_retain": 0.7396510243415833
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_20k_AMNESIAC_seed42_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_20k_seed42_member_mask.npy"
+      }
+    },
+    {
+      "seed": 123,
+      "forget_acc": 0.0,
+      "retain_acc": 0.06885246187448502,
+      "mia_classic": {
+        "A1_loss_threshold": 0.5363269306012434,
+        "A2_conf_threshold": 0.5358304531907392,
+        "A3_entropy_threshold": 0.533294931432077,
+        "A4_logit_lr": 0.5675339096033736,
+        "A5_rep_knn": 0.7958916305592187,
+        "A7_margin_label": 0.5217858333212573,
+        "A8_shadow_feature": 0.5363106279073138
+      },
+      "mia_neural": 0.5075117681298034,
+      "mia_query_adapt": 0.4952770491882466,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": null,
+      "cka": {
+        "Image-Image": 1.0,
+        "Text-Text": 0.9999999403953552,
+        "Fused-Fused": 0.9999999403953552,
+        "Image-Text": 0.004227912053465843,
+        "Fused-Image": 0.004526200704276562,
+        "Fused-Text": 0.5180476307868958
+      },
+      "dist_to_retr": {
+        "logits_mse_all": 44.06441116333008,
+        "embeds_mse_all": 0.5351020097732544,
+        "logits_mse_forget": 64.64027404785156,
+        "embeds_mse_forget": 0.6077374815940857,
+        "logits_mse_retain": 38.458946228027344,
+        "embeds_mse_retain": 0.5153141021728516
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_20k_AMNESIAC_seed123_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_20k_seed123_member_mask.npy"
+      }
+    },
+    {
+      "seed": 5508,
+      "forget_acc": 0.0,
+      "retain_acc": 0.057065218687057495,
+      "mia_classic": {
+        "A1_loss_threshold": 0.5430926270716894,
+        "A2_conf_threshold": 0.5277219722406619,
+        "A3_entropy_threshold": 0.5274134118950743,
+        "A4_logit_lr": 0.5550743726766749,
+        "A5_rep_knn": 0.7898054522642257,
+        "A7_margin_label": 0.5139415562767946,
+        "A8_shadow_feature": 0.5430726304930018
+      },
+      "mia_neural": 0.5500412192249735,
+      "mia_query_adapt": 0.4858513258753393,
+      "attr_acc": null,
+      "prop_auc": null,
+      "inv_acc": null,
+      "cka": {
+        "Image-Image": 1.0,
+        "Text-Text": 0.9999999403953552,
+        "Fused-Fused": 1.0,
+        "Image-Text": 0.0019860935863107443,
+        "Fused-Image": 0.001639251597225666,
+        "Fused-Text": 0.7328979969024658
+      },
+      "dist_to_retr": {
+        "logits_mse_all": 42.41508483886719,
+        "embeds_mse_all": 0.7612001299858093,
+        "logits_mse_forget": 57.339866638183594,
+        "embeds_mse_forget": 0.8935226798057556,
+        "logits_mse_retain": 38.3323974609375,
+        "embeds_mse_retain": 0.7250032424926758
+      },
+      "privacy_cache": {
+        "forget_outputs_npz": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_20k_AMNESIAC_seed5508_forget_outputs.npz",
+        "member_mask_npy": "C:\\Users\\34998855\\AppData\\Roaming\\JetBrains\\PyCharm2025.1\\extensions\\com.intellij.database\\mu_align\\experiments\\..\\results\\privacy_cache\\vqa_v2_20k_seed5508_member_mask.npy"
+      }
+    }
+  ],
+  "aggregate": {
+    "forget_acc": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "retain_acc": {
+      "mean": 0.0679248000184695,
+      "std": 0.010426746560610791
+    },
+    "mia_neural": {
+      "mean": 0.5231720631728916,
+      "std": 0.023375574355581547
+    },
+    "mia_query_adapt": {
+      "mean": 0.49482612224882166,
+      "std": 0.008758043593720797
+    },
+    "inv_acc": {
+      "mean": null,
+      "std": null
+    },
+    "prop_auc": {
+      "mean": null,
+      "std": null
+    },
+    "attr_acc": {
+      "mean": null,
+      "std": null
+    },
+    "dist_to_retr": {
+      "logits_mse_all": {
+        "mean": 44.56790542602539,
+        "std": 2.4437830851582953
+      },
+      "embeds_mse_all": {
+        "mean": 0.6866169770558676,
+        "std": 0.13122106551772908
+      },
+      "logits_mse_forget": {
+        "mean": 63.19253285725912,
+        "std": 5.279821063890442
+      },
+      "embeds_mse_forget": {
+        "mean": 0.7840270002683004,
+        "std": 0.1541569252067235
+      },
+      "logits_mse_retain": {
+        "mean": 39.47891616821289,
+        "std": 1.8773008395821464
+      },
+      "embeds_mse_retain": {
+        "mean": 0.6599894563357035,
+        "std": 0.12550640603125915
+      }
+    }
+  }
+}

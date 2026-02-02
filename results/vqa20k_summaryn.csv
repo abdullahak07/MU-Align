@@ -1,0 +1,4 @@
+vqa_v2_20k
+"{'forget_acc': {'mean': 0.2525175412495931, 'std': 0.40778043775062417}, 'retain_acc': {'mean': 0.32880385716756183, 'std': 0.11812611521019799}, 'mia_neural': {'mean': 0.49037435741771335, 'std': 0.019098653370651707}, 'inv_acc': {'mean': None, 'std': None}, 'prop_auc': {'mean': None, 'std': None}, 'attr_acc': {'mean': None, 'std': None}}"
+"{'forget_acc': {'mean': 0.0, 'std': 0.0}, 'retain_acc': {'mean': 0.40281399091084796, 'std': 0.008994765642070628}, 'mia_neural': {'mean': 0.5000774992566274, 'std': 0.01085580381522207}, 'inv_acc': {'mean': None, 'std': None}, 'prop_auc': {'mean': None, 'std': None}, 'attr_acc': {'mean': None, 'std': None}}"
+"{'forget_acc': {'mean': 0.0, 'std': 0.0}, 'retain_acc': {'mean': 0.41283485293388367, 'std': 0.001671832556126748}, 'mia_neural': {'mean': 0.501054321648381, 'std': 0.0018261386625157306}, 'inv_acc': {'mean': nan, 'std': nan}, 'prop_auc': {'mean': None, 'std': None}, 'attr_acc': {'mean': None, 'std': None}}"
