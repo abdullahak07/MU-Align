@@ -1,3 +1,0 @@
-To run the file, be sure to keep all the files in the same folder and check the dataset path.
-  Then just run the main.py file, and it will automatically load all the datasets and files.
-  To see the results and plot, run the advanced result file.
