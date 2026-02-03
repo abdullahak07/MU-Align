@@ -367,7 +367,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions or issues, please:
 - Open an issue on [GitHub Issues](https://github.com/yourusername/mu-align/issues)
-- Contact: [your.email@institution.edu](mailto:your.email@institution.edu)
+
 
 ---
 
