@@ -154,21 +154,9 @@ The paper also documents a sentence-wrapping evaluation artefact in MLLMU-Bench 
 
 # Method
 
-The complete objective is
-
-\[
-\mathcal{L}
-=
-\mathcal{L}_{CE}
-+
-\lambda_a\mathcal{L}_{align}
-+
-\lambda_k\mathcal{L}_{KD}
-+
-\lambda_u\mathcal{L}_{unif}
-+
-\lambda_t\mathcal{L}_{tail}
-\]
+```text
+L = LCE + λalign Lalign + λKD LKD + λunif Lunif + λtail Ltail
+```
 
 where
 
