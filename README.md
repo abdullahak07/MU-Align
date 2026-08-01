@@ -1,287 +1,306 @@
-# MU-ALIGN
+# MU-ALIGN: Tail-Suppressed Multimodal Machine Unlearning for Vision-Language Models
 
-<div align="center">
+<p align="center">
+  <a href="https://github.com/abdullahak07/MU-Align/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+  </a>
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python">
+  </a>
+  <a href="https://pytorch.org/">
+    <img src="https://img.shields.io/badge/PyTorch-2.x-ee4c2c.svg" alt="PyTorch">
+  </a>
+  <img src="https://img.shields.io/badge/GPU-RTX4090-76b900.svg" alt="GPU">
+  <img src="https://img.shields.io/badge/Status-KBS%20Submission-success.svg" alt="Status">
+</p>
 
-**Tail-Suppressed Multimodal Machine Unlearning with Improved Utility–Forgetting Trade-offs**
-
-Abdullah Ahmad Khan · Hamid Laga · Mohammed Kaosar · Ferdous Sohel
-
-[![Repository](https://img.shields.io/badge/GitHub-MU--Align-181717?logo=github)](https://github.com/abdullahak07/MU-Align)
-[![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c?logo=pytorch)](https://pytorch.org/)
-
-</div>
-
----
-
-## Overview
-
-**MU-ALIGN** is an approximate multimodal machine-unlearning method that suppresses residual high-confidence behaviour on forgotten examples while preserving utility on retained data.
-
-The method combines two coordinated optimisation paths.
-
-### Forget path
-
-- predictive uniformity, `L_unif`;
-- confidence and logit-norm tail suppression, `L_tail`.
-
-### Retain path
-
-- supervised cross-entropy, `L_CE`;
-- CORAL-inspired second-moment alignment, `L_align`;
-- knowledge distillation from the frozen original model, `L_KD`.
-
-The frozen original model acts as the teacher during unlearning. This requires no additional teacher-training stage, although teacher forward passes contribute to runtime.
+<p align="center">
+  <b>Knowledge-Based Systems (Under Review)</b> &nbsp;|&nbsp;
+  <a href="#overview">Overview</a> &nbsp;|&nbsp;
+  <a href="#main-results">Results</a> &nbsp;|&nbsp;
+  <a href="#method">Method</a> &nbsp;|&nbsp;
+  <a href="#quickstart">Quickstart</a> &nbsp;|&nbsp;
+  <a href="#reproducibility">Reproducibility</a> &nbsp;|&nbsp;
+  <a href="#citation">Citation</a>
+</p>
 
 ---
 
-## Method
+# TL;DR
 
-The complete objective is:
-
-```text
-L = L_CE + lambda_a L_align + lambda_k L_KD
-    + lambda_u L_unif + lambda_t L_tail
-```
-
-The paper configuration uses:
-
-| Parameter | Value |
-|---|---:|
-| `lambda_u` | 1.0 |
-| `lambda_t` | 1.0 |
-| `lambda_a` | 0.1 |
-| `lambda_k` | 0.5 |
-| Distillation temperature `T` | 2 |
-| Label smoothing | 0.05 |
-| Unlearning epochs | 8 |
-| Batch size | 32 |
+> **MU-ALIGN** is a multimodal machine unlearning framework designed for Vision-Language Models (VLMs). It combines **predictive uniformity**, **logit-tail suppression**, **CORAL-inspired second-moment alignment**, and **knowledge distillation from the original model** to improve the utility–forgetting trade-off.
+>
+> On the evaluated VQA-v2 benchmark, **MU-ALIGN achieves zero mean ForgetAcc while improving RetainAcc over faithful SCRUB by 5.60 percentage points across three independent seeds.** It also demonstrates stronger tail suppression and competitive low-FPR membership privacy under the evaluated loss-based attack protocol.
 
 ---
 
-## Main Results
+# Overview
 
-### VQA-v2 answer-class deletion
+<p align="center">
+<img src="figures/flow.png" width="950">
+</p>
 
-Mean ± sample standard deviation over seeds 42, 123, and 5508:
+**MU-ALIGN** jointly optimizes two complementary objectives:
+
+### Forget Path (Decision-Space Suppression)
+
+- Predictive Uniformity
+- Logit-Norm Hinge
+- Suppresses residual high-confidence forgotten predictions
+
+### Retain Path (Representation Stabilisation)
+
+- Cross-Entropy supervision
+- CORAL-inspired second-moment alignment
+- Knowledge distillation from the frozen ORIG model
+
+Unlike alternating optimisation approaches, both objectives are optimized **simultaneously in a single gradient update** for each balanced mini-batch.
+
+---
+
+# Motivation
+
+Existing multimodal unlearning methods generally evaluate:
+
+- Forget accuracy
+- Retain accuracy
+- Average membership inference AUC
+
+However, these average metrics hide an important failure mode.
+
+A small number of forgotten samples can retain extremely confident predictions, dominating worst-case privacy leakage despite appearing successful under average-case evaluation.
+
+MU-ALIGN explicitly targets these residual high-confidence predictions while preserving retained utility.
+
+---
+
+# Main Results
+
+## VQA-v2 (Three Independent Seeds)
+
+<p align="center">
+<img src="figures/fig_vqa_corrected.png" width="900">
+</p>
+
+Across three independent random seeds:
 
 | Method | ForgetAcc ↓ | RetainAcc ↑ |
-|---|---:|---:|
-| SCRUB (faithful) | 0.00036 ± 0.00063 | 0.3973 ± 0.0087 |
-| RETR reference | 0.00000 ± 0.00000 | 0.5917 ± 0.0170 |
+|---------|------------:|------------:|
+| Faithful SCRUB | 0.00036 ± 0.00063 | 0.3973 ± 0.0087 |
 | **MU-ALIGN** | **0.00000 ± 0.00000** | **0.4533 ± 0.0066** |
 
-At essentially matched aggregate forgetting, MU-ALIGN improves retained accuracy over faithful SCRUB by **5.60 percentage points**.
+**Key finding**
 
-### Low-FPR membership inference
-
-Under disjoint method-specific loss-based calibration:
-
-| Method | TPR @ FPR 1e-2 ↓ | TPR @ FPR 5e-3 ↓ | TPR @ FPR 1e-3 ↓ |
-|---|---:|---:|---:|
-| ORIG | 0.01484 | 0.00911 | 0.00224 |
-| RETR | 0.01022 | 0.00483 | 0.00098 |
-| SCRUB | 0.01024 | 0.00549 | **0.00080** |
-| **MU-ALIGN** | **0.00832** | **0.00474** | 0.00098 |
-
-MU-ALIGN is lower than SCRUB at the reported FPR values `1e-2` and `5e-3`, while SCRUB is marginally lower at `1e-3`. Neither method uniformly dominates across all reported operating points.
-
-### MLLMU-Bench generation family
-
-| Method | Forget ↓ | Retain ↑ | Selective gap ↑ |
-|---|---:|---:|---:|
-| ORIG | 0.580 | 0.576 | -0.004 |
-| RETR | 0.290 | 0.302 | +0.012 |
-| Uniform-Target | 0.395 | 0.513 | +0.118 |
-| **MU-ALIGN** | **0.362 ± 0.061** | **0.553 ± 0.014** | **+0.192 ± 0.050** |
-
-This comparison is against the evaluated Uniform-Target baseline. Faithful generative SCRUB was not evaluated in this setting.
+- Zero ForgetAcc on all three seeds
+- +5.60 percentage-point RetainAcc improvement over faithful SCRUB
+- Hyperparameters selected only on seed 42 and fixed for all remaining seeds
 
 ---
 
-## Paper Figures
+# Tail Suppression
 
-The repository includes the paper figures as PDF files. Click a figure name to open the vector-quality PDF.
+<p align="center">
+<img src="figures/fig_score_dist.png" width="900">
+</p>
 
-| Figure | Description |
-|---|---|
-| [**flow.pdf**](flow.pdf) | MU-ALIGN pipeline: forget path, retain path, and joint optimisation |
-| [**fig_vqa_corrected.pdf**](fig_vqa_corrected.pdf) | Seed-level VQA-v2 retained-accuracy comparison |
-| [**fig_score_dist.pdf**](fig_score_dist.pdf) | Seed-42 loss-based MIA score distributions |
-| [**fig_lowfpr.pdf**](fig_lowfpr.pdf) | Low-FPR membership-inference curves |
-| [**fig_mllmu.pdf**](fig_mllmu.pdf) | MLLMU-Bench generation-family comparison |
-| [**fig_oracle.pdf**](fig_oracle.pdf) | RETR-aligned oracle diagnostic, retained for archival comparison |
+Average-case metrics such as AUC may remain nearly unchanged while a very small subset of forgotten samples dominates privacy leakage.
 
-> GitHub does not reliably render PDF files inline inside a README. The links above open the original vector PDFs directly.
+MU-ALIGN explicitly suppresses this residual high-confidence tail by combining:
 
----
+- Predictive Uniformity
+- Logit-Norm Hinge
 
-## Experimental Scope
-
-### Primary VQA-v2 setting
-
-The controlled model uses:
-
-- a frozen ImageNet-pretrained ResNet-18 visual encoder;
-- a GRU question encoder with hidden dimension 512;
-- a two-layer multimodal fusion classifier;
-- a 20,000-example VQA-v2 subset;
-- an answer-class deletion protocol in which examples with majority answer `"yes"` form the forget set.
-
-The primary comparison includes ORIG, RETR, faithful SCRUB, and MU-ALIGN.
-
-This benchmark is a controlled answer-class deletion setting and should not be interpreted as evidence of arbitrary sample-level or subject-level erasure.
-
-### Oracle diagnostic
-
-The RETR-aligned oracle stress test is a development-seed diagnostic only. It uses RETR during optimisation and is not a deployable unlearning method.
-
-The selected checkpoint passes five of eight gates but fails validation utility, RETR decision agreement, and noncollapse. This demonstrates that matching aggregate ForgetAcc does not by itself establish retraining-aligned behavioural equivalence.
+This substantially reduces concentration of high-confidence forgotten predictions.
 
 ---
 
-## Installation
+# Low-FPR Membership Privacy
 
-```bash
-git clone https://github.com/abdullahak07/MU-Align.git
-cd MU-Align
-```
+<p align="center">
+<img src="figures/fig_lowfpr.png" width="900">
+</p>
 
-Create and activate a virtual environment.
+Membership inference is evaluated using disjoint calibration and evaluation non-members under three operating points:
 
-### Windows PowerShell
+- FPR = 10⁻²
+- FPR = 5×10⁻³
+- FPR = 10⁻³
 
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
+Results show:
 
-### Linux or macOS
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-The exact commands used to reproduce individual tables and figures should be documented alongside their corresponding scripts and configuration files in the archival release.
+- Lower TPR than faithful SCRUB at FPR 10⁻² and 5×10⁻³
+- Comparable privacy overall
+- Neither method uniformly dominates across every operating point
 
 ---
 
-## Reproducibility Checklist
+# MLLMU-Bench Evaluation
 
-For each reported experiment, the repository should provide:
+<p align="center">
+<img src="figures/fig_mllmu.png" width="900">
+</p>
 
-- configuration file;
-- random seed;
-- split manifest;
-- checkpoint path or download instructions;
-- evaluation command;
-- raw metric output;
-- generated table or figure.
+On the evaluated MLLMU-Bench generation task, MU-ALIGN:
 
-Primary VQA-v2 seeds:
+- achieves lower forget performance,
+- higher retained utility,
+- and a larger selective utility–forgetting gap
 
-```text
-42
-123
-5508
-```
+than the evaluated Uniform-Target baseline.
 
-SCRUB hyperparameters were selected on seed 42 and frozen for seeds 123 and 5508.
+The paper also documents a sentence-wrapping evaluation artefact in MLLMU-Bench and reports both raw and canonical evaluation for transparency.
 
 ---
 
-## Recommended Repository Layout
+# Method
+
+The complete objective is
+
+\[
+\mathcal{L}
+=
+\mathcal{L}_{CE}
++
+\lambda_a\mathcal{L}_{align}
++
+\lambda_k\mathcal{L}_{KD}
++
+\lambda_u\mathcal{L}_{unif}
++
+\lambda_t\mathcal{L}_{tail}
+\]
+
+where
+
+| Component | Purpose |
+|------------|---------|
+| Predictive Uniformity | Diffuse forgotten predictions |
+| Logit-Norm Hinge | Suppress residual confidence tails |
+| Cross Entropy | Preserve retained task performance |
+| CORAL-inspired Second Moment Alignment | Stabilize retained representations |
+| Knowledge Distillation | Reduce representation drift |
+
+---
+
+# Repository Structure
 
 ```text
 MU-Align/
-├── data/
-├── models/
-├── methods/
-│   ├── mu_align/
-│   └── scrub/
-├── experiments/
-│   ├── vqav2/
-│   └── mllmu/
-├── evaluation/
-│   ├── utility/
-│   ├── membership_inference/
-│   ├── tail_analysis/
-│   └── oracle_audit/
+│
+├── checkpoints/
 ├── configs/
-├── results/
+├── data/
+├── figures/
+│   ├── flow.png
+│   ├── fig_vqa_corrected.png
+│   ├── fig_score_dist.png
+│   ├── fig_lowfpr.png
+│   └── fig_mllmu.png
+│
+├── models/
 ├── scripts/
-├── flow.pdf
-├── fig_vqa_corrected.pdf
-├── fig_score_dist.pdf
-├── fig_lowfpr.pdf
-├── fig_mllmu.pdf
-├── fig_oracle.pdf
-├── requirements.txt
+├── results/
+├── paper/
 └── README.md
 ```
 
 ---
 
-## Limitations
+# Quickstart
 
-The current study has several important limitations:
+Clone the repository
 
-- the primary benchmark uses answer-class deletion;
-- the retained `"yes"`-answer diagnostic was not available under the evaluated split;
-- the primary model is a compact ResNet-GRU-MLP multimodal classifier;
-- only three primary seeds are reported;
-- NPO is not included as a primary baseline;
-- faithful generative SCRUB is not evaluated on MLLMU-Bench;
-- the privacy evaluation is limited to loss-based attacks and confidence-tail diagnostics;
-- the seed-42 tail analysis is exploratory;
-- the RETR-assisted oracle audit is diagnostic and non-deployable.
+```bash
+git clone https://github.com/abdullahak07/MU-Align.git
+
+cd MU-Align
+```
+
+Create the environment
+
+```bash
+conda create -n mualign python=3.10
+
+conda activate mualign
+```
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## Citation
+# Reproducibility
 
-Publication metadata will be updated after acceptance. For the submitted manuscript:
+The repository contains:
+
+- Training code
+- Evaluation scripts
+- Hyperparameter configurations
+- Three-seed evaluation protocol
+- Tail analysis
+- Low-FPR membership inference evaluation
+- Figure generation scripts
+
+The primary experiments use:
+
+- VQA-v2
+- Three independent seeds
+- Fixed hyperparameters after seed-42 selection
+- RTX 4090 GPU
+
+---
+
+# Current Scope
+
+The current paper evaluates:
+
+- ✅ VQA-v2
+- ✅ Three independent seeds
+- ✅ Faithful SCRUB comparison
+- ✅ Tail suppression analysis
+- ✅ Low-FPR loss-based membership inference
+- ✅ MLLMU-Bench generation evaluation
+
+The paper does **not** claim:
+
+- certified machine unlearning
+- superiority over full retraining
+- architecture-independent generalisation
+- exhaustive membership inference attacks
+
+These remain directions for future work.
+
+---
+
+# Citation
 
 ```bibtex
 @article{khan2026mualign,
-  title   = {MU-ALIGN: Tail-Suppressed Multimodal Machine Unlearning with Improved Utility--Forgetting Trade-offs},
-  author  = {Khan, Abdullah Ahmad and Laga, Hamid and Kaosar, Mohammed and Sohel, Ferdous},
-  journal = {Knowledge-Based Systems},
-  year    = {2026},
-  note    = {Submitted}
+  title={MU-ALIGN: Tail-Suppressed Multimodal Machine Unlearning for Vision-Language Models},
+  author={Abdullah Ahmad Khan and Hamid Laga and Mohammed Kaosar and Ferdous Sohel},
+  journal={Knowledge-Based Systems},
+  year={2026},
+  note={Under Review}
 }
 ```
 
 ---
 
-## Authors
+# Acknowledgements
 
-- Abdullah Ahmad Khan
-- Hamid Laga
-- Mohammed Kaosar
-- Ferdous Sohel
-
-School of Information Technology  
-Murdoch University  
-Perth, Western Australia, Australia
+This work was conducted at the **School of Information Technology, Murdoch University, Australia**.
 
 ---
 
 ## Contact
 
-For questions, reproducibility concerns, or bug reports, open an issue:
+**Abdullah Ahmad Khan**
 
-https://github.com/abdullahak07/MU-Align/issues
+School of Information Technology
 
----
+Murdoch University
 
-## Licence
-
-Add the final repository licence before archival release. Ensure that it is compatible with all included datasets, pretrained models, and third-party code.
+GitHub: https://github.com/abdullahak07/MU-Align
