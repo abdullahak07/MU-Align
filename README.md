@@ -1,393 +1,287 @@
-# MU-ALIGN: Unlearning Through Alignment
+# MU-ALIGN
 
 <div align="center">
 
-[![Paper](https://img.shields.io/badge/Paper-USENIX%20Submission-red.svg)](https://arxiv.org)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
+**Tail-Suppressed Multimodal Machine Unlearning with Improved Utility–Forgetting Trade-offs**
 
-**Official Implementation of "MU-ALIGN: Machine Unlearning through Decision-Space Alignment"**
+Abdullah Ahmad Khan · Hamid Laga · Mohammed Kaosar · Ferdous Sohel
 
-*Submitted to USENIX Security 2026*
-
-[Paper](https://arxiv.org) | [Documentation](docs/) | [Results](results/)
+[![Repository](https://img.shields.io/badge/GitHub-MU--Align-181717?logo=github)](https://github.com/abdullahak07/MU-Align)
+[![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c?logo=pytorch)](https://pytorch.org/)
 
 </div>
 
 ---
 
-## 📋 Overview
+## Overview
 
-**MU-ALIGN** is a novel machine unlearning framework that achieves privacy-preserving model updates through **decision-space alignment**. Unlike existing methods that focus on representation-space modifications, MU-ALIGN directly enforces uniform output distributions over forget samples, achieving:
+**MU-ALIGN** is an approximate multimodal machine-unlearning method that suppresses residual high-confidence behaviour on forgotten examples while preserving utility on retained data.
 
-- 🔒 **Superior Privacy**: Near-zero TPR (<0.1%) at extreme low FPR (10⁻⁵) against membership inference attacks
-- ⚡ **Computational Efficiency**: 2.4× faster than retraining on VQA-v2 benchmarks  
-- 🎯 **Preservation of Utility**: Maintains >98% retention accuracy while achieving complete forgetting
-- 🛡️ **Robustness**: Effective against state-of-the-art attacks (SCRUB, LiRA, confidence-based MI)
+The method combines two coordinated optimisation paths.
 
-### Key Contributions
+### Forget path
 
-1. **Novel Alignment Objective**: Decision-space uniformity enforcement via KL divergence minimization
-2. **Tail Suppression**: Explicit mechanism to eliminate high-confidence outliers that enable membership inference
-3. **Comprehensive Evaluation**: First work to evaluate unlearning at extreme low-FPR regime (10⁻⁵) across vision-language models
-4. **Scalability**: Demonstrated effectiveness on VQA-v2 datasets ranging from 5k to 80k samples
+- predictive uniformity, `L_unif`;
+- confidence and logit-norm tail suppression, `L_tail`.
+
+### Retain path
+
+- supervised cross-entropy, `L_CE`;
+- CORAL-inspired second-moment alignment, `L_align`;
+- knowledge distillation from the frozen original model, `L_KD`.
+
+The frozen original model acts as the teacher during unlearning. This requires no additional teacher-training stage, although teacher forward passes contribute to runtime.
 
 ---
 
-## 🚀 Quick Start
+## Method
 
-### Prerequisites
+The complete objective is:
 
-```bash
-Python >= 3.8
-PyTorch >= 2.0
-CUDA >= 11.7 (for GPU acceleration)
+```text
+L = L_CE + lambda_a L_align + lambda_k L_KD
+    + lambda_u L_unif + lambda_t L_tail
 ```
 
-### Installation
+The paper configuration uses:
+
+| Parameter | Value |
+|---|---:|
+| `lambda_u` | 1.0 |
+| `lambda_t` | 1.0 |
+| `lambda_a` | 0.1 |
+| `lambda_k` | 0.5 |
+| Distillation temperature `T` | 2 |
+| Label smoothing | 0.05 |
+| Unlearning epochs | 8 |
+| Batch size | 32 |
+
+---
+
+## Main Results
+
+### VQA-v2 answer-class deletion
+
+Mean ± sample standard deviation over seeds 42, 123, and 5508:
+
+| Method | ForgetAcc ↓ | RetainAcc ↑ |
+|---|---:|---:|
+| SCRUB (faithful) | 0.00036 ± 0.00063 | 0.3973 ± 0.0087 |
+| RETR reference | 0.00000 ± 0.00000 | 0.5917 ± 0.0170 |
+| **MU-ALIGN** | **0.00000 ± 0.00000** | **0.4533 ± 0.0066** |
+
+At essentially matched aggregate forgetting, MU-ALIGN improves retained accuracy over faithful SCRUB by **5.60 percentage points**.
+
+### Low-FPR membership inference
+
+Under disjoint method-specific loss-based calibration:
+
+| Method | TPR @ FPR 1e-2 ↓ | TPR @ FPR 5e-3 ↓ | TPR @ FPR 1e-3 ↓ |
+|---|---:|---:|---:|
+| ORIG | 0.01484 | 0.00911 | 0.00224 |
+| RETR | 0.01022 | 0.00483 | 0.00098 |
+| SCRUB | 0.01024 | 0.00549 | **0.00080** |
+| **MU-ALIGN** | **0.00832** | **0.00474** | 0.00098 |
+
+MU-ALIGN is lower than SCRUB at the reported FPR values `1e-2` and `5e-3`, while SCRUB is marginally lower at `1e-3`. Neither method uniformly dominates across all reported operating points.
+
+### MLLMU-Bench generation family
+
+| Method | Forget ↓ | Retain ↑ | Selective gap ↑ |
+|---|---:|---:|---:|
+| ORIG | 0.580 | 0.576 | -0.004 |
+| RETR | 0.290 | 0.302 | +0.012 |
+| Uniform-Target | 0.395 | 0.513 | +0.118 |
+| **MU-ALIGN** | **0.362 ± 0.061** | **0.553 ± 0.014** | **+0.192 ± 0.050** |
+
+This comparison is against the evaluated Uniform-Target baseline. Faithful generative SCRUB was not evaluated in this setting.
+
+---
+
+## Paper Figures
+
+The repository includes the paper figures as PDF files. Click a figure name to open the vector-quality PDF.
+
+| Figure | Description |
+|---|---|
+| [**flow.pdf**](flow.pdf) | MU-ALIGN pipeline: forget path, retain path, and joint optimisation |
+| [**fig_vqa_corrected.pdf**](fig_vqa_corrected.pdf) | Seed-level VQA-v2 retained-accuracy comparison |
+| [**fig_score_dist.pdf**](fig_score_dist.pdf) | Seed-42 loss-based MIA score distributions |
+| [**fig_lowfpr.pdf**](fig_lowfpr.pdf) | Low-FPR membership-inference curves |
+| [**fig_mllmu.pdf**](fig_mllmu.pdf) | MLLMU-Bench generation-family comparison |
+| [**fig_oracle.pdf**](fig_oracle.pdf) | RETR-aligned oracle diagnostic, retained for archival comparison |
+
+> GitHub does not reliably render PDF files inline inside a README. The links above open the original vector PDFs directly.
+
+---
+
+## Experimental Scope
+
+### Primary VQA-v2 setting
+
+The controlled model uses:
+
+- a frozen ImageNet-pretrained ResNet-18 visual encoder;
+- a GRU question encoder with hidden dimension 512;
+- a two-layer multimodal fusion classifier;
+- a 20,000-example VQA-v2 subset;
+- an answer-class deletion protocol in which examples with majority answer `"yes"` form the forget set.
+
+The primary comparison includes ORIG, RETR, faithful SCRUB, and MU-ALIGN.
+
+This benchmark is a controlled answer-class deletion setting and should not be interpreted as evidence of arbitrary sample-level or subject-level erasure.
+
+### Oracle diagnostic
+
+The RETR-aligned oracle stress test is a development-seed diagnostic only. It uses RETR during optimisation and is not a deployable unlearning method.
+
+The selected checkpoint passes five of eight gates but fails validation utility, RETR decision agreement, and noncollapse. This demonstrates that matching aggregate ForgetAcc does not by itself establish retraining-aligned behavioural equivalence.
+
+---
+
+## Installation
 
 ```bash
-# Clone repository
-git clone https://github.com/yourusername/mu-align.git
-cd mu-align
+git clone https://github.com/abdullahak07/MU-Align.git
+cd MU-Align
+```
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+Create and activate a virtual environment.
 
-# Install dependencies
+### Windows PowerShell
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### Linux or macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
-
-# Install package
-pip install -e .
 ```
 
-### Basic Usage
+The exact commands used to reproduce individual tables and figures should be documented alongside their corresponding scripts and configuration files in the archival release.
 
-```python
-from mu_align import MUAlign
-from mu_align.utils import load_model, load_data
+---
 
-# Load pretrained model and data
-model = load_model('vilt-vqa', checkpoint='path/to/checkpoint.pth')
-forget_data, retain_data = load_data('vqa_v2', split='20k')
+## Reproducibility Checklist
 
-# Initialize MU-ALIGN
-unlearner = MUAlign(
-    model=model,
-    alpha=1.0,          # Uniformity loss weight
-    beta=0.5,           # Tail suppression weight
-    temperature=2.0     # Temperature for KL divergence
-)
+For each reported experiment, the repository should provide:
 
-# Perform unlearning
-unlearned_model = unlearner.unlearn(
-    forget_loader=forget_data,
-    retain_loader=retain_data,
-    epochs=5
-)
+- configuration file;
+- random seed;
+- split manifest;
+- checkpoint path or download instructions;
+- evaluation command;
+- raw metric output;
+- generated table or figure.
 
-# Evaluate privacy
-from mu_align.attacks import evaluate_privacy
+Primary VQA-v2 seeds:
 
-results = evaluate_privacy(
-    model=unlearned_model,
-    forget_data=forget_data,
-    retain_data=retain_data,
-    attacks=['confidence', 'scrub', 'lira']
-)
+```text
+42
+123
+5508
+```
 
-print(f"TPR @ FPR=10⁻⁵: {results['tpr_1e5']:.4f}")
+SCRUB hyperparameters were selected on seed 42 and frozen for seeds 123 and 5508.
+
+---
+
+## Recommended Repository Layout
+
+```text
+MU-Align/
+├── data/
+├── models/
+├── methods/
+│   ├── mu_align/
+│   └── scrub/
+├── experiments/
+│   ├── vqav2/
+│   └── mllmu/
+├── evaluation/
+│   ├── utility/
+│   ├── membership_inference/
+│   ├── tail_analysis/
+│   └── oracle_audit/
+├── configs/
+├── results/
+├── scripts/
+├── flow.pdf
+├── fig_vqa_corrected.pdf
+├── fig_score_dist.pdf
+├── fig_lowfpr.pdf
+├── fig_mllmu.pdf
+├── fig_oracle.pdf
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## 📁 Repository Structure
+## Limitations
 
-```
-mu-align/
-├── attacks/                    # Membership inference attacks
-│   ├── confidence_attack.py   # Confidence-based MI
-│   ├── scrub_attack.py        # SCRUB evaluation
-│   └── lira_attack.py         # LiRA implementation
-│
-├── baselines/                  # Baseline unlearning methods
-│   ├── retrain.py             # Retraining from scratch
-│   ├── scrub.py               # SCRUB unlearning
-│   ├── fisher.py              # Fisher forgetting
-│   ├── amnesiac.py            # Amnesiac unlearning
-│   └── multidelete.py         # Multiple deletion
-│
-├── experiments/                # Experiment configurations
-│   ├── vqa_v2_5k.yaml         # VQA-v2 5k split
-│   ├── vqa_v2_20k.yaml        # VQA-v2 20k split
-│   └── vqa_v2_full.yaml       # VQA-v2 full dataset
-│
-├── models/                     # Model architectures
-│   ├── vilt.py                # ViLT vision-language model
-│   └── mu_align.py            # MU-ALIGN core implementation
-│
-├── plots/                      # Visualization scripts
-│   ├── plot_privacy.py        # Privacy analysis plots
-│   ├── plot_utility.py        # Utility preservation plots
-│   └── plot_distribution.py   # Score distribution analysis
-│
-├── results/                    # Experimental results
-│   ├── privacy_cache/         # Cached evaluation results
-│   └── figures/               # Generated figures
-│
-├── main.py                     # Main training script
-├── main.ipynb                  # Jupyter notebook demo
-├── agg.py                      # Results aggregation
-├── requirements.txt            # Python dependencies
-└── README.md                   # This file
-```
+The current study has several important limitations:
+
+- the primary benchmark uses answer-class deletion;
+- the retained `"yes"`-answer diagnostic was not available under the evaluated split;
+- the primary model is a compact ResNet-GRU-MLP multimodal classifier;
+- only three primary seeds are reported;
+- NPO is not included as a primary baseline;
+- faithful generative SCRUB is not evaluated on MLLMU-Bench;
+- the privacy evaluation is limited to loss-based attacks and confidence-tail diagnostics;
+- the seed-42 tail analysis is exploratory;
+- the RETR-assisted oracle audit is diagnostic and non-deployable.
 
 ---
 
-## 🔬 Experiments
+## Citation
 
-### Reproducing Paper Results
-
-#### 1. VQA-v2 20k Experiment (Table 2)
-
-```bash
-# Run MU-ALIGN
-python main.py \
-    --config experiments/vqa_v2_20k.yaml \
-    --method mu_align \
-    --alpha 1.0 \
-    --beta 0.5 \
-    --seed 5508
-
-# Run baselines
-for method in scrub retr fisher amnesiac multidelete; do
-    python main.py \
-        --config experiments/vqa_v2_20k.yaml \
-        --method $method \
-        --seed 5508
-done
-
-# Aggregate results
-python agg.py --experiment vqa_v2_20k --output results/table2.csv
-```
-
-#### 2. Privacy Evaluation (Figure 4, Table 9)
-
-```bash
-# Evaluate membership inference at fixed FPR
-python attacks/evaluate_privacy.py \
-    --models results/vqa_v2_20k/*.pth \
-    --fprs 1e-5 1e-4 5e-4 1e-3 \
-    --attacks confidence scrub lira \
-    --output results/privacy_eval.json
-
-# Generate diagnostic plots
-python plots/plot_distribution.py \
-    --results results/privacy_eval.json \
-    --output results/figures/figure4.pdf
-```
-
-#### 3. Ablation Studies (Table 6)
-
-```bash
-# Vary alpha (uniformity weight)
-for alpha in 0.0 0.5 1.0 2.0; do
-    python main.py \
-        --config experiments/vqa_v2_20k.yaml \
-        --method mu_align \
-        --alpha $alpha \
-        --beta 0.5 \
-        --tag ablation_alpha_$alpha
-done
-
-# Vary beta (tail suppression weight)
-for beta in 0.0 0.25 0.5 1.0; do
-    python main.py \
-        --config experiments/vqa_v2_20k.yaml \
-        --method mu_align \
-        --alpha 1.0 \
-        --beta $beta \
-        --tag ablation_beta_$beta
-done
-```
-
----
-
-## 📊 Results
-
-### Privacy vs Utility Trade-off
-
-| Method       | Retain Acc | Forget Acc | TPR@10⁻⁵ | TPR@10⁻³ |
-|--------------|------------|------------|----------|----------|
-| **Original** | 0.38       | 0.14       | 6.0×10⁻⁴ | 2.5×10⁻² |
-| SCRUB        | 0.39       | 0.00       | **0.9821** | **0.9912** |
-| Retraining   | 0.38       | 0.00       | 2.3×10⁻³ | 1.6×10⁻² |
-| **MU-ALIGN** | **0.39**   | **0.00**   | **6.0×10⁻⁴** | **4.8×10⁻³** |
-
-*Table: Main results on VQA-v2 20k split. MU-ALIGN achieves lowest TPR while maintaining utility.*
-
-### Key Findings
-
-✅ **Near-Perfect Forgetting**: 0.0% accuracy on forget set (vs 14% original)  
-✅ **Extreme Low-FPR Privacy**: TPR < 0.1% at FPR = 10⁻⁵  
-✅ **Utility Preservation**: 98% retain accuracy maintained  
-✅ **Computational Efficiency**: 2.4× faster than retraining
-
-See [RESULTS.md](RESULTS.md) for detailed analysis and additional experiments.
-
----
-
-## 🔍 Method Details
-
-### MU-ALIGN Objective
-
-The core unlearning objective combines three components:
-
-```
-L_total = L_retain + α·L_uniform + β·L_tail
-
-where:
-  L_retain  = Cross-entropy loss on retain set (utility preservation)
-  L_uniform = KL(p_θ(y|x) || Uniform) on forget set (alignment)
-  L_tail    = Max-suppression penalty on top-k confidences (tail suppression)
-```
-
-### Hyperparameters
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `alpha` | 1.0 | Uniformity loss weight |
-| `beta` | 0.5 | Tail suppression weight |
-| `temperature` | 2.0 | KL divergence temperature |
-| `top_k` | 10 | Number of top predictions to suppress |
-| `lr` | 1e-5 | Learning rate |
-| `epochs` | 5 | Unlearning epochs |
-
----
-
-## 🛠️ Advanced Usage
-
-### Custom Datasets
-
-```python
-from mu_align.data import UnlearningDataset
-
-# Create custom forget/retain split
-dataset = UnlearningDataset(
-    data_path='path/to/data',
-    forget_indices=forget_idx,
-    retain_indices=retain_idx,
-    transform=transforms
-)
-
-forget_loader = DataLoader(dataset.forget, batch_size=32)
-retain_loader = DataLoader(dataset.retain, batch_size=32)
-```
-
-### Custom Attacks
-
-```python
-from mu_align.attacks import BaseAttack
-
-class MyCustomAttack(BaseAttack):
-    def compute_scores(self, model, data):
-        # Your attack logic here
-        return member_scores, non_member_scores
-    
-# Evaluate
-attack = MyCustomAttack()
-results = attack.evaluate(model, forget_data, retain_data)
-```
-
-### Distributed Training
-
-```bash
-# Multi-GPU training
-python -m torch.distributed.launch \
-    --nproc_per_node=4 \
-    main.py \
-    --config experiments/vqa_v2_full.yaml \
-    --distributed
-```
-
----
-
-## 📈 Visualization
-
-### Generate All Plots
-
-```bash
-# Privacy analysis
-python plots/plot_privacy.py --results results/ --output figures/
-
-# Utility analysis  
-python plots/plot_utility.py --results results/ --output figures/
-
-# Score distributions
-python plots/plot_distribution.py --results results/ --output figures/
-
-# Ablation studies
-python plots/plot_ablation.py --results results/ablations/ --output figures/
-```
-
----
-
-## 🤝 Citation
-
-If you use this code or find our work helpful, please cite:
+Publication metadata will be updated after acceptance. For the submitted manuscript:
 
 ```bibtex
-@inproceedings{mu-align2026,
-  title={MU-ALIGN: Machine Unlearning through Decision-Space Alignment},
-  author={[Your Name] and [Co-authors]},
-  booktitle={USENIX Security Symposium},
-  year={2026}
+@article{khan2026mualign,
+  title   = {MU-ALIGN: Tail-Suppressed Multimodal Machine Unlearning with Improved Utility--Forgetting Trade-offs},
+  author  = {Khan, Abdullah Ahmad and Laga, Hamid and Kaosar, Mohammed and Sohel, Ferdous},
+  journal = {Knowledge-Based Systems},
+  year    = {2026},
+  note    = {Submitted}
 }
 ```
 
 ---
 
-## 📄 License
+## Authors
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Abdullah Ahmad Khan
+- Hamid Laga
+- Mohammed Kaosar
+- Ferdous Sohel
 
----
-
-## 🙏 Acknowledgments
-
-- **Datasets**: [VQA v2.0](https://visualqa.org/) 
-- **Base Models**: [ViLT](https://github.com/dandelin/vilt) (Vision-and-Language Transformer)
-- **Baselines**: Implementation adapted from [SCRUB](https://github.com/facebookresearch/SCRUB)
-
----
-
-## 📞 Contact
-
-For questions or issues, please:
-- Open an issue on [GitHub Issues](https://github.com/yourusername/mu-align/issues)
-
+School of Information Technology  
+Murdoch University  
+Perth, Western Australia, Australia
 
 ---
 
-## 🔄 Updates
+## Contact
 
-**Latest Release**: v1.0.0 (February 2026)
+For questions, reproducibility concerns, or bug reports, open an issue:
 
-- ✅ Initial release with VQA-v2 experiments
-- ✅ Support for 5 baseline methods
-- ✅ Comprehensive privacy evaluation suite
-- ✅ Distributed training support
-
-See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
+https://github.com/abdullahak07/MU-Align/issues
 
 ---
 
-<div align="center">
+## Licence
 
-**⭐ Star this repository if you find it helpful!**
-
-Made with ❤️ for the research community
-
-</div>
+Add the final repository licence before archival release. Ensure that it is compatible with all included datasets, pretrained models, and third-party code.
